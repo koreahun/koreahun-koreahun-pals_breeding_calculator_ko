@@ -1,62 +1,45 @@
 import pandas as pd
 import streamlit as st
-import chardet
-import pandas as pd
 
-def detect_encoding(file_path):
-    # 파일을 바이너리 모드로 열어서 인코딩 감지
-    with open(file_path, 'rb') as f:
-        result = chardet.detect(f.read())
-    return result['encoding']
-
-# 파일의 인코딩 감지
-file_encoding = detect_encoding(r'Data/Images.csv')
-
-# 디코딩 에러를 방지하기 위해 인코딩 감지를 통해 얻은 인코딩으로 파일 읽기 시도
-try:
-    sources = pd.read_csv(r'Data/Images.csv', sep=',', header=None, encoding=file_encoding)
-except UnicodeDecodeError:
-    print(f"UTF-8로 디코딩하는 데 문제가 있어서 {file_encoding}으로 다시 시도합니다.")
-
-    # 인코딩 감지를 통해 얻은 인코딩으로 파일을 열지 못하는 경우 대안으로 'utf-16' 사용
-    try:
-        sources = pd.read_csv(r'Data/Images.csv', sep=',', header=None, encoding='utf-16')
-        print(f"{file_encoding}로 디코딩하는 데 성공했습니다.")
-    except UnicodeDecodeError:
-        print("UTF-16로도 디코딩하는 데 문제가 있습니다. 다른 인코딩을 시도해 보세요.")
-
-# 웹페이지 설정
+# Start Webpage
 st.set_page_config(layout="wide")
 
-# ---------------------------- 데이터 로딩 ------------------------------- #
+
+# ---------------------------- Retrieve Data ------------------------------- #
+
 @st.cache_data
 def load_pals():
-    pals = pd.read_csv(r'Data/Pals.csv', header=None, encoding='utf-8')
+    pals = pd.read_csv(r'Data/Pals.csv', header=None)
     number_of_pals = len(pals[0])
     return pals, number_of_pals
 
+
 @st.cache_data
 def load_all_combinations():
-    all_combos = pd.read_csv(r'Data/AllCombos.csv', sep=';', header=None, encoding='utf-8')
+    all_combos = pd.read_csv(r'Data/AllCombos.csv', sep=';', header=None)
     return all_combos
+
 
 @st.cache_data
 def load_images_src():
-    sources = pd.read_csv(r'Data/Images.csv', sep=',', header=None, encoding='utf-8')
+    sources = pd.read_csv(r'Data/Images.csv', sep=',', header=None)
     return sources
+
 
 @st.cache_data
 def load_wikis_url():
-    sources = pd.read_csv(r'Data/Wikis.csv', sep=',', header=None, encoding='utf-8')
+    sources = pd.read_csv(r'Data/Wikis.csv', sep=',', header=None)
     return sources
 
-# 데이터 로딩
+
+# start Data
 df_pals, n_pals = load_pals()
 df_all_combos = load_all_combinations()
 img_sources = load_images_src()
 wikis_url = load_wikis_url()
 
-# ---------------------------- 데이터 함수 ------------------------- #
+
+# ---------------------------- Data Functions ------------------------- #
 
 def search_number(pal):
     number = df_pals[df_pals[0] == pal].index[0]
@@ -123,15 +106,15 @@ def image_with_wiki(pal, place=st):
         </a>''', unsafe_allow_html=True)
 
 
-# ---------------------------- 웹 앱 빌드 -------------------------- #
+# ---------------------------- Web App Build -------------------------- #
 
-# 헤더
+# Header
 with st.container():
     c1, c2, c3 = st.columns(3)
-    c1.text("게임 버전: 0.1.3.0")
+    c1.text("Game Version: 0.1.3.0")
     c1.write("[https://github.com/beckerfelipee](https://github.com/beckerfelipee)")
-    c1.link_button("커피 살게요!", "https://www.buymeacoffee.com/beckerfelipee")
-    c2.title('팰월드 교배 :blue[계산기]', anchor=False)
+    c1.link_button("Buy me a coffee!", "https://www.buymeacoffee.com/beckerfelipee")
+    c2.title('Palworld Breeding :blue[Calculator]', anchor=False)
 
 # Calculator Area
 
@@ -208,3 +191,6 @@ with st.expander("Search for Pal"):
                 couple = f"{c[0]} + {c[1]}"
                 r_list[index].code(couple)
                 index = (index + 1) % len(r_list)
+
+
+streamlit run C:\\Users\\gjgns\\Downloads\\PalworldBreedingCalculator-main\\build.py
